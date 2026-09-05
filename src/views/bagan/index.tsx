@@ -116,35 +116,20 @@ function SchedControls({ onOpenRoster }: { onOpenRoster(): void }) {
               </Button>
             </>
           ) : (
-            <>
-              <Button
-                size="sm"
-                variant="primary"
-                disabled={viewer}
-                onClick={() =>
-                  guard(tx("Acak bagan?"), tx("Ya, acak bagan"), () => {
-                    if (s.fmt === "pair") s.buildPair("random", false);
-                    else s.buildSolo("random", false);
-                    setMsg(tx("Bagan disusun ulang."));
-                  })
-                }
-              >
-                {t("btnRandom")}
-              </Button>
-              <Button
-                size="sm"
-                disabled={viewer}
-                onClick={() =>
-                  guard(tx("Pakai bagan baku?"), tx("Ya, pakai baku"), () => {
-                    if (s.fmt === "pair") s.buildPair("standard", false);
-                    else s.buildSolo("standard", false);
-                    setMsg(tx("Bagan disusun ulang."));
-                  })
-                }
-              >
-                {t("btnStd")}
-              </Button>
-            </>
+            <Button
+              size="sm"
+              variant="primary"
+              disabled={viewer}
+              onClick={() =>
+                guard(tx("Acak bagan?"), tx("Ya, acak bagan"), () => {
+                  if (s.fmt === "pair") s.buildPair("random", false);
+                  else s.buildSolo("random", false);
+                  setMsg(tx("Bagan disusun ulang."));
+                })
+              }
+            >
+              {t("btnRandom")}
+            </Button>
           )}
           <Button
             size="sm"

@@ -294,7 +294,7 @@ body {
   border-radius: var(--radius-nb);
   background: var(--nb-card);
   color: var(--nb-ink);
-  box-shadow: var(--nb-shadow-sm);
+  box-shadow: var(--nb-shadow);
   padding: 0.5rem 0.875rem;
   font-family: var(--font-cond);
   font-weight: 700;
@@ -318,7 +318,7 @@ body {
 
 .nb-btn:active:not(:disabled) {
   box-shadow: 0 0 0 var(--nb-ink);
-  transform: translate(2px, 2px);
+  transform: translate(4px, 4px);
 }
 
 .nb-btn:disabled {
@@ -380,7 +380,7 @@ body {
   display: inline-flex;
   border: var(--nb-border) solid var(--nb-line);
   border-radius: var(--radius-nb);
-  box-shadow: var(--nb-shadow-sm);
+  box-shadow: var(--nb-shadow);
   background: var(--nb-card);
   overflow: hidden;
 }
@@ -433,7 +433,7 @@ body {
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.3;
-  box-shadow: var(--nb-shadow-sm);
+  box-shadow: var(--nb-shadow);
   min-width: 0;
 }
 

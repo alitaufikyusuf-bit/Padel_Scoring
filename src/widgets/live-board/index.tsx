@@ -45,13 +45,13 @@ export function LiveBoard() {
             {running.map(([court, e]) => (
               <div
                 key={court}
-                className="nb-border rounded-[var(--radius-nb-lg)] p-3"
+                className="nb-border rounded-[var(--radius-nb-lg)] p-4 sm:p-5"
                 style={{ background: "var(--nb-accent)", color: "var(--nb-accent-ink)" }}
               >
                 <div className="nb-label" style={{ color: "inherit" }}>
                   {txf("Lapangan {0}", Number(court) + 1)}
                 </div>
-                <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-2">
+                <div className="mt-3 grid grid-cols-[1fr_auto] items-center gap-4 sm:gap-6">
                   <span
                     className="nb-title truncate text-[clamp(0.95rem,2.6vw,1.35rem)]"
                     style={{ color: "inherit" }}

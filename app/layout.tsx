@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
-import { barlow, barlowCond } from "@/shared/fonts";
+import { spaceGrotesk, oswald } from "@/shared/fonts";
 import { AppProviders, THEME_BOOT_SCRIPT } from "./providers";
 import "./globals.css";
 
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             terang di perangkat yang memilih gelap. Lihat providers.tsx. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
-      <body className={`${barlow.variable} ${barlowCond.variable} antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${oswald.variable} antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
