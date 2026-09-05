@@ -16,7 +16,7 @@ import * as React from "react";
 import { GM_OPTS, MAX_C, MEX_MIN, PT_OPTS } from "@/shared/config";
 import { cleanRoom, clock, fileSafe } from "@/shared/lib";
 import { useT } from "@/shared/i18n";
-import { Button, Card, Field, Input, Note, Pill, Segmented, TextArea } from "@/shared/ui";
+import { Button, Card, Field, Input, Note, NumberStepper, Pill, Segmented, TextArea } from "@/shared/ui";
 import { useTournament } from "@/entities/tournament/store";
 import { atStakeOf, useCourtInfo, useProgress } from "@/entities/tournament/derived";
 import { decodeCode } from "@/entities/draw-code";
@@ -316,29 +316,26 @@ function CourtsCard() {
           />
         </Field>
         <Field label={t("lblSlotMin")} htmlFor="slotMin">
-          <Input
+          <NumberStepper
             id="slotMin"
-            type="number"
             min={5}
             max={60}
+            step={5}
             value={s.slotMin}
             disabled={viewer}
-            className="w-24"
-            onChange={(e) => s.setSlotMin(parseInt(e.target.value, 10))}
+            onChange={s.setSlotMin}
           />
         </Field>
 
         {s.fmt === "solo" && (
           <Field label={t("lblRounds")} htmlFor="inRounds">
-            <Input
+            <NumberStepper
               id="inRounds"
-              type="number"
               min={3}
               max={24}
               value={s.rounds}
               disabled={viewer}
-              className="w-24"
-              onChange={(e) => s.setRounds(parseInt(e.target.value, 10))}
+              onChange={s.setRounds}
             />
             <Pill tone="plain">{txf("bawaan {0}", defaultRounds(s.np, s.courts))}</Pill>
           </Field>

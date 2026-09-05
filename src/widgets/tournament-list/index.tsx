@@ -23,7 +23,7 @@ import * as React from "react";
 import { MAX_C, MAX_P, MAX_T, MIN_P, MIN_T } from "@/shared/config";
 import { cleanRoom, stamp } from "@/shared/lib";
 import { useI18n, useT } from "@/shared/i18n";
-import { Button, Card, Empty, Field, Input, Note, Pill, Segmented } from "@/shared/ui";
+import { Button, Card, Empty, Field, Input, Note, NumberStepper, Pill, Segmented } from "@/shared/ui";
 import { decodeCode, encodeCode, summarizeCode } from "@/entities/draw-code";
 import {
   trDone,
@@ -532,14 +532,12 @@ function NewPane({ onOpen, back }: { onOpen(): void; back(): void }) {
         {/* Satu kunci kamus untuk dua hal berbeda akan salah di salah satunya:
             Fix Partner menghitung TIM, dua format lainnya menghitung ORANG. */}
         <Field label={solo ? tx("Jumlah pemain") : tx("Jumlah tim")} htmlFor="nwCount">
-          <Input
+          <NumberStepper
             id="nwCount"
-            type="number"
             min={min}
             max={max}
-            className="w-24"
             value={count}
-            onChange={(e) => setCount(parseInt(e.target.value, 10) || min)}
+            onChange={setCount}
           />
           <Pill tone="plain">
             {min}–{max}
