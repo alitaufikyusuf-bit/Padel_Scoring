@@ -188,6 +188,133 @@ export const TextArea = React.forwardRef<
   );
 });
 
+/* --------------------------------------------------------- NumberStepper --- */
+
+export interface NumberStepperProps {
+  value: number;
+  onChange(v: number): void;
+  min?: number;
+  max?: number;
+  step?: number;
+  disabled?: boolean;
+  id?: string;
+  className?: string;
+  ariaLabel?: string;
+}
+
+export function NumberStepper({
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  disabled = false,
+  id,
+  className,
+  ariaLabel,
+}: NumberStepperProps) {
+  const [text, setText] = React.useState(String(value ?? ""));
+
+  React.useEffect(() => {
+    setText(String(value ?? ""));
+  }, [value]);
+
+  const commitValue = React.useCallback(
+    (nextVal: number) => {
+      let clamped = nextVal;
+      if (min !== undefined && clamped < min) clamped = min;
+      if (max !== undefined && clamped > max) clamped = max;
+      setText(String(clamped));
+      if (clamped !== value) {
+        onChange(clamped);
+      }
+    },
+    [min, max, value, onChange],
+  );
+
+  const handleBlur = () => {
+    const parsed = parseInt(text, 10);
+    if (isNaN(parsed) || text.trim() === "") {
+      commitValue(min ?? 0);
+    } else {
+      commitValue(parsed);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    if (raw === "" || /^\d+$/.test(raw)) {
+      setText(raw);
+    }
+  };
+
+  const handleDec = () => {
+    const parsed = parseInt(text, 10);
+    const base = isNaN(parsed) ? value : parsed;
+    commitValue(base - step);
+  };
+
+  const handleInc = () => {
+    const parsed = parseInt(text, 10);
+    const base = isNaN(parsed) ? value : parsed;
+    commitValue(base + step);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      handleInc();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      handleDec();
+    }
+  };
+
+  const canDec = !disabled && (min === undefined || value > min);
+  const canInc = !disabled && (max === undefined || value < max);
+
+  return (
+    <div className={cx("inline-flex items-center gap-1.5", className)}>
+      <Button
+        type="button"
+        size="sm"
+        disabled={!canDec}
+        onClick={handleDec}
+        aria-label="Kurangi"
+        className="h-9 w-9 p-0 font-mono font-bold text-base leading-none select-none shrink-0"
+      >
+        −
+      </Button>
+      <input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        disabled={disabled}
+        value={text}
+        onFocus={(e) => e.target.select()}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className="nb-input h-9 w-14 text-center font-mono font-bold text-sm"
+        aria-label={ariaLabel}
+      />
+      <Button
+        type="button"
+        size="sm"
+        disabled={!canInc}
+        onClick={handleInc}
+        aria-label="Tambah"
+        className="h-9 w-9 p-0 font-mono font-bold text-base leading-none select-none shrink-0"
+      >
+        +
+      </Button>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ Pill --- */
 
 export type PillTone = "plain" | "accent" | "hl" | "warn" | "danger" | "good" | "ink";
