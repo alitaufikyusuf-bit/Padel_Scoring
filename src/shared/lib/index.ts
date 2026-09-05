@@ -134,7 +134,7 @@ export function lsJson<T>(key: string, fallback: T): T {
 }
 
 /** Waktu ISO -> "4 Sep 2026 21.15" ala Indonesia, aman kalau tanggalnya rusak. */
-export function stamp(iso: string | undefined, lang: "id" | "en" = "id"): string {
+export function stamp(iso: string | undefined, lang: "id" | "en" = "en"): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";

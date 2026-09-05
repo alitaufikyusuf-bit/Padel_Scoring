@@ -50,7 +50,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Tema dipasang sebelum halaman digambar supaya tidak ada kilatan
             terang di perangkat yang memilih gelap. Lihat providers.tsx. */}

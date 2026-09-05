@@ -55,6 +55,8 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLElement>, "titl
   actions?: React.ReactNode;
   /** keterangan singkat di bawah judul */
   note?: React.ReactNode;
+  /** tooltip ⓘ di samping judul kartu */
+  tip?: string;
   as?: "section" | "div" | "article";
 }
 
@@ -62,6 +64,7 @@ export function Card({
   title,
   actions,
   note,
+  tip,
   as = "section",
   className,
   children,
@@ -72,7 +75,14 @@ export function Card({
     <Tag className={cx("nb-card p-3 sm:p-4", className)} {...rest}>
       {(title || actions) && (
         <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          {title ? <h2 className="nb-title m-0">{title}</h2> : <span />}
+          {title ? (
+            <h2 className="nb-title m-0 flex items-center gap-1.5">
+              {title}
+              {tip && <Tip text={tip} />}
+            </h2>
+          ) : (
+            <span />
+          )}
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </header>
       )}
