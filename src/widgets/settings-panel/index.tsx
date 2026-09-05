@@ -14,7 +14,7 @@
 import * as React from "react";
 
 import { GM_OPTS, MAX_C, MEX_MIN, PT_OPTS } from "@/shared/config";
-import { clock, fileSafe } from "@/shared/lib";
+import { cleanRoom, clock, fileSafe } from "@/shared/lib";
 import { useT } from "@/shared/i18n";
 import { Button, Card, Field, Input, Note, Pill, Segmented, TextArea } from "@/shared/ui";
 import { useTournament } from "@/entities/tournament/store";
@@ -24,7 +24,7 @@ import { defaultRounds } from "@/entities/schedule/solo";
 import { useSb } from "@/features/scoreboard/store";
 import { useSync } from "@/features/sync-room/store";
 import { useCode } from "@/features/sync-room/useSession";
-import { syErrText } from "@/features/sync-room/api";
+import { apiCall, syErrText } from "@/features/sync-room/api";
 import { askConfirm } from "@/features/confirm";
 import { useTrList } from "@/entities/tournament/list-store";
 import type { Fmt, ScoreMode, ScoreSys } from "@/shared/types";
@@ -353,21 +353,121 @@ function CourtsCard() {
 
 function RoomCard() {
   const { t, tx, txf } = useT();
+  const s = useTournament();
   const sync = useSync();
   const code = useCode();
   const trTouch = useTrList((x) => x.touch);
   const [busy, setBusy] = React.useState(false);
   const [msg, setMsg] = React.useState("");
 
+  const defaultRoom = React.useMemo(
+    () => cleanRoom(s.evTitle ? `${s.evTitle}-${Math.floor(100 + Math.random() * 900)}` : "PADEL-1"),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+  const [newRoom, setNewRoom] = React.useState(defaultRoom);
+  const [newPin, setNewPin] = React.useState("");
+  const [newErr, setNewErr] = React.useState("");
+
   const joined = !!sync.room && sync.role !== "off";
+
+  const handleCreateRoom = async () => {
+    const rm = cleanRoom(newRoom || defaultRoom);
+    if (!rm) {
+      setNewErr(tx("Isi dulu kode ruangnya, misalnya MN-PADEL-17AGT."));
+      return;
+    }
+    setBusy(true);
+    setNewErr("");
+    const r = await apiCall("POST", "", {
+      act: "create",
+      room: rm,
+      code,
+      pin: newPin,
+      by: sync.dev || "HP Host",
+    });
+    setBusy(false);
+    if (!r.ok) {
+      if (r.error === "sudah-ada") {
+        setNewErr(tx("Kode ruang itu sudah dipakai. Pilih kode lain."));
+      } else {
+        setNewErr(syErrText(r, tx));
+      }
+      return;
+    }
+    sync.join({ room: rm, pin: newPin, role: "scorer", rev: 1 });
+    trTouch({ code, room: rm, pin: newPin, role: "scorer", rev: 1 });
+    const inviteUrl = window.location.origin + "/join/" + rm;
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      setMsg(tx("Ruang dibuat dan tautan undangannya disalin."));
+    } catch {
+      setMsg(tx("Ruang dibuat. Kode ruang: ") + rm);
+    }
+  };
 
   return (
     <Card title={t("cardSync")} note={t("tipSync")}>
       <div className="flex flex-col gap-3">
         {!joined ? (
-          <Note tone="info">
-            {tx("Turnamen ini belum dibagikan. Tekan tombol di kartu Bagikan untuk membuat ruangnya.")}
-          </Note>
+          <div className="flex flex-col gap-3">
+            <Note tone="info">
+              {tx("Turnamen ini belum dibagikan ke ruang. Buat kode ruang agar perangkat lain bisa ikut mencatat atau menonton live:")}
+            </Note>
+
+            <Field label={t("lblRoom")} htmlFor="newRoomInput">
+              <div className="flex w-full gap-2">
+                <Input
+                  id="newRoomInput"
+                  className="min-w-0 flex-1 font-mono uppercase"
+                  placeholder="ASD-PADEL-123"
+                  value={newRoom}
+                  onChange={(e) => {
+                    setNewRoom(cleanRoom(e.target.value));
+                    setNewErr("");
+                  }}
+                />
+              </div>
+            </Field>
+
+            <Field label={t("lblPin")} htmlFor="newPinInput" tip={t("tipSync")}>
+              <div className="flex w-full gap-2">
+                <Input
+                  id="newPinInput"
+                  type="password"
+                  className="min-w-0 flex-1"
+                  placeholder={t("phPin")}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value)}
+                />
+              </div>
+            </Field>
+
+            <Field label={t("lblDev")} htmlFor="inDevInit">
+              <div className="flex w-full gap-2">
+                <Input
+                  id="inDevInit"
+                  className="min-w-0 flex-1"
+                  value={sync.dev}
+                  maxLength={40}
+                  placeholder={tx("HP Andre")}
+                  onChange={(e) => sync.setDev(e.target.value)}
+                />
+              </div>
+            </Field>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="primary"
+                disabled={busy || !newRoom.trim()}
+                onClick={handleCreateRoom}
+              >
+                {t("btnShare")}
+              </Button>
+            </div>
+
+            {newErr && <Note tone="danger">{newErr}</Note>}
+          </div>
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2">
@@ -472,6 +572,7 @@ function RoomCard() {
 function ShareCard() {
   const { t, tx, txf } = useT();
   const s = useTournament();
+  const sync = useSync();
   const code = useCode();
   const prog = useProgress();
   const [msg, setMsg] = React.useState("");
@@ -500,6 +601,20 @@ function ShareCard() {
     <Card title={t("cardShare")} note={t("tipShare")}>
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-2">
+          {sync.room && (
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() =>
+                copy(
+                  window.location.origin + "/join/" + sync.room,
+                  tx("Tautan undangan disalin."),
+                )
+              }
+            >
+              {tx("🔗 Salin tautan ruang")} ({sync.room})
+            </Button>
+          )}
           <Button size="sm" onClick={() => copy(code, tx("Kode bagan disalin."))}>
             {t("btnCopyCode")}
           </Button>
