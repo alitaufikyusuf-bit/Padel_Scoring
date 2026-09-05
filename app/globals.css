@@ -637,3 +637,30 @@ body {
     position: static;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Logo adaptif mode gelap / terang
+   -------------------------------------------------------------------------- */
+.mn-logo-light {
+  display: block;
+}
+.mn-logo-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .mn-logo-light {
+  display: none;
+}
+:root[data-theme="dark"] .mn-logo-dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mn-logo-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .mn-logo-dark {
+    display: block;
+  }
+}
+

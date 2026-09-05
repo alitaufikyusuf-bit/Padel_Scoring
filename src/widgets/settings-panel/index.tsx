@@ -36,7 +36,6 @@ export function SettingsPanel() {
       <ScoreSystemCard />
       <CourtsCard />
       <RoomCard />
-      <ShareCard />
     </div>
   );
 }
@@ -80,7 +79,7 @@ function FormatCard() {
   };
 
   return (
-    <Card title={t("grpFmt")} note={t("tipSetup")}>
+    <Card title={t("grpFmt")} tip={t("tipSetup")}>
       <div className="flex flex-col gap-3">
         <Field label={t("lblFmt")}>
           <Segmented
@@ -201,7 +200,7 @@ function ScoreSystemCard() {
   };
 
   return (
-    <Card title={tx("Sistem skor")} note={sysNote()}>
+    <Card title={tx("Sistem skor")} tip={sysNote()}>
       <div className="flex flex-col gap-3">
         <Field label={t("lblSys")}>
           <Segmented
@@ -407,7 +406,7 @@ function RoomCard() {
   };
 
   return (
-    <Card title={t("cardSync")} note={t("tipSync")}>
+    <Card title={t("cardSync")} tip={t("tipSync")}>
       <div className="flex flex-col gap-3">
         {!joined ? (
           <div className="flex flex-col gap-3">
@@ -492,6 +491,22 @@ function RoomCard() {
             </Field>
 
             <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={async () => {
+                  const url = window.location.origin + "/join/" + sync.room;
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    setMsg(tx("Tautan undangan disalin."));
+                  } catch {
+                    setMsg(tx("Gagal menyalin tautan."));
+                  }
+                }}
+              >
+                {tx("🔗 Salin tautan ruang")} ({sync.room})
+              </Button>
+
               <Button
                 size="sm"
                 disabled={busy}

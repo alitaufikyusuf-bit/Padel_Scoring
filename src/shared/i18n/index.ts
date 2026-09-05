@@ -50,7 +50,7 @@ function applyThemeAttr(v: Theme): void {
 }
 
 export const useI18n = create<I18nState>((set, get) => ({
-  lang: "id",
+  lang: "en",
   theme: "auto",
   ready: false,
 
@@ -76,7 +76,7 @@ export const useI18n = create<I18nState>((set, get) => ({
     if (get().ready) return;
     const l = lsGet(KEY.lang);
     const t = lsGet(KEY.theme);
-    const lang: Lang = l === "en" ? "en" : "id";
+    const lang: Lang = l === "id" ? "id" : "en";
     const theme: Theme = t === "light" || t === "dark" ? t : "auto";
     set({ lang, theme, ready: true });
     applyThemeAttr(theme);

@@ -73,13 +73,27 @@ export function AppBar({ onHome }: { onHome(): void }) {
         <button
           type="button"
           onClick={onHome}
-          className="min-w-0 shrink-0 text-left"
+          className="flex items-center gap-2.5 min-w-0 shrink-0 text-left cursor-pointer group"
           aria-label={tx("Buka daftar turnamen")}
         >
-          <span className="nb-label block">MN Padel Club</span>
-          <span className="nb-title block max-w-[46vw] truncate text-[15px] sm:max-w-none">
-            {rec?.name || evTitle}
-          </span>
+          <div className="relative size-10 shrink-0 rounded-[var(--radius-nb)] overflow-hidden border-2 border-[var(--nb-line)] bg-[var(--nb-card-2)] shadow-[2px_2px_0_var(--nb-line)] transition-transform group-hover:translate-x-[-1px] group-hover:translate-y-[-1px]">
+            <img
+              src="/icons/apple-touch-icon.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-light size-full object-contain p-0.5"
+            />
+            <img
+              src="/icons/icon-192.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-dark size-full object-contain p-0.5"
+            />
+          </div>
+          <div className="min-w-0">
+            <span className="nb-label block leading-tight">MN Padel Club</span>
+            <span className="nb-title block max-w-[34vw] sm:max-w-none truncate text-[14px] sm:text-[15px] leading-snug">
+              {rec?.name || evTitle}
+            </span>
+          </div>
         </button>
 
         {evDate && <Pill tone="plain">{evDate}</Pill>}
