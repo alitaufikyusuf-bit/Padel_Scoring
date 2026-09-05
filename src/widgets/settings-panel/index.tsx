@@ -36,7 +36,6 @@ export function SettingsPanel() {
       <ScoreSystemCard />
       <CourtsCard />
       <RoomCard />
-      <ShareCard />
     </div>
   );
 }
@@ -492,6 +491,22 @@ function RoomCard() {
             </Field>
 
             <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={async () => {
+                  const url = window.location.origin + "/join/" + sync.room;
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    setMsg(tx("Tautan undangan disalin."));
+                  } catch {
+                    setMsg(tx("Gagal menyalin tautan."));
+                  }
+                }}
+              >
+                {tx("🔗 Salin tautan ruang")} ({sync.room})
+              </Button>
+
               <Button
                 size="sm"
                 disabled={busy}
