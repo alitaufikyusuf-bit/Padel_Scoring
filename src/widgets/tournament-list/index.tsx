@@ -22,7 +22,7 @@ import * as React from "react";
 
 import { MAX_C, MAX_P, MAX_T, MIN_P, MIN_T } from "@/shared/config";
 import { cleanRoom, stamp } from "@/shared/lib";
-import { useT } from "@/shared/i18n";
+import { useI18n, useT } from "@/shared/i18n";
 import { Button, Card, Empty, Field, Input, Note, Pill, Segmented } from "@/shared/ui";
 import { decodeCode, encodeCode, summarizeCode } from "@/entities/draw-code";
 import {
@@ -43,6 +43,7 @@ import { apiCall, syErrText } from "@/features/sync-room/api";
 import { useSync } from "@/features/sync-room/store";
 import { askConfirm } from "@/features/confirm";
 import type { Fmt, ScoreSys } from "@/shared/types";
+import { PadelSticker } from "./PadelSticker";
 
 type Pane = "list" | "new" | "join";
 
@@ -81,6 +82,9 @@ function useJoinFromHash(): string {
 
 function ListPane({ onOpen, go }: { onOpen(): void; go(p: Pane): void }) {
   const { t, tx, txf, lang } = useT();
+  const toggleLang = useI18n((s) => s.toggleLang);
+  const cycleTheme = useI18n((s) => s.cycleTheme);
+  const theme = useI18n((s) => s.theme);
   const list = useTrList((s) => s.list);
   const filter = useTrList((s) => s.filter);
   const setFilter = useTrList((s) => s.setFilter);
@@ -120,19 +124,60 @@ function ListPane({ onOpen, go }: { onOpen(): void; go(p: Pane): void }) {
   return (
     <>
       <Card
-        title={t("hmTitle")}
+        title={
+          <span className="flex items-center gap-2.5 sm:gap-3">
+            <span className="relative block size-11 sm:size-12 shrink-0 rounded-[var(--radius-nb)] overflow-hidden border-2 border-[var(--nb-line)] bg-[var(--nb-card-2)] shadow-[2.5px_2.5px_0_var(--nb-line)]">
+              <img
+                src="/icons/apple-touch-icon.png"
+                alt="MN Padel Club Logo"
+                className="mn-logo-light size-full object-contain p-0.5"
+              />
+              <img
+                src="/icons/icon-192.png"
+                alt="MN Padel Club Logo"
+                className="mn-logo-dark size-full object-contain p-0.5"
+              />
+            </span>
+            <span className="min-w-0 flex flex-col justify-center">
+              <span
+                className="nb-label block text-[10px] sm:text-[11px] font-extrabold tracking-wider uppercase leading-tight"
+                style={{ color: "var(--nb-ink-soft)" }}
+              >
+                MN PADEL CLUB
+              </span>
+              <span className="nb-title block text-[18px] sm:text-[22px] leading-tight text-[var(--nb-ink)]">
+                {t("hmTitle")}
+              </span>
+            </span>
+          </span>
+        }
         note={t("hmSub")}
         actions={
-          <>
-            <Button size="sm" variant="primary" onClick={() => go("new")}>
-              {t("hmNew")}
+          <div className="flex items-center gap-1.5 ml-auto">
+            <Button size="sm" variant="ghost" onClick={toggleLang} title={tx("Bahasa")}>
+              {lang === "en" ? "ID" : "EN"}
             </Button>
-            <Button size="sm" onClick={() => go("join")}>
-              {t("hmJoin")}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={cycleTheme}
+              title={tx("Tema")}
+              aria-label={tx("Tema")}
+            >
+              {theme === "dark" ? "🌙" : theme === "light" ? "☀" : "◐"}
             </Button>
-          </>
+          </div>
         }
       >
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="primary" onClick={() => go("new")}>
+            {t("hmNew")}
+          </Button>
+          <Button size="sm" onClick={() => go("join")}>
+            {t("hmJoin")}
+          </Button>
+        </div>
+
         <Segmented
           value={filter}
           onChange={(v: TrFilter) => setFilter(v)}
@@ -173,6 +218,7 @@ function ListPane({ onOpen, go }: { onOpen(): void; go(p: Pane): void }) {
           )}
         </div>
       </Card>
+      <PadelSticker />
     </>
   );
 
@@ -214,7 +260,10 @@ function Row({
   return (
     <div
       className="nb-border nb-shadow-sm flex flex-wrap items-center gap-2 rounded-[var(--radius-nb)] p-2.5"
-      style={{ background: highlight ? "var(--nb-accent)" : "var(--nb-card)" }}
+      style={{
+        background: highlight ? "var(--nb-accent)" : "var(--nb-card)",
+        color: highlight ? "var(--nb-accent-ink)" : "var(--nb-ink)",
+      }}
     >
       <button
         type="button"
@@ -222,8 +271,16 @@ function Row({
         onClick={() => onOpen(rec)}
         aria-label={txf("Buka {0}", rec.name)}
       >
-        <div className="nb-title truncate text-[15px]">{rec.name || tx("Turnamen")}</div>
-        <div className="nb-label mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 normal-case tracking-normal">
+        <div
+          className="nb-title truncate text-[15px]"
+          style={highlight ? { color: "var(--nb-accent-ink)" } : undefined}
+        >
+          {rec.name || tx("Turnamen")}
+        </div>
+        <div
+          className="nb-label mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 normal-case tracking-normal"
+          style={highlight ? { color: "var(--nb-accent-ink)", opacity: 0.85 } : undefined}
+        >
           <span>{rec.date || stamp(rec.at, lang)}</span>
           <span aria-hidden>·</span>
           <span>{fmtName}</span>
@@ -245,16 +302,19 @@ function Row({
         {rec.room ? (
           <Pill tone="ink">{rec.room}</Pill>
         ) : (
-          <Pill tone="plain">{tx("Belum dibagikan")}</Pill>
+          <Pill tone="plain" style={highlight ? { background: "var(--nb-card)", color: "var(--nb-ink)" } : undefined}>
+            {tx("Belum dibagikan")}
+          </Pill>
         )}
         {rec.role !== "solo" && (
-          <Pill tone="plain">
+          <Pill tone="plain" style={highlight ? { background: "var(--nb-card)", color: "var(--nb-ink)" } : undefined}>
             {rec.role === "scorer" ? tx("Pencatat") : tx("Penonton")}
           </Pill>
         )}
         <Button
           size="sm"
-          variant="ghost"
+          variant={highlight ? "default" : "ghost"}
+          style={highlight ? { background: "var(--nb-card)", color: "var(--nb-ink)" } : undefined}
           aria-label={txf("Hapus {0}", rec.name)}
           onClick={() => onDelete(rec)}
         >
@@ -280,15 +340,151 @@ function NewPane({ onOpen, back }: { onOpen(): void; back(): void }) {
   const [courts, setCourts] = React.useState(2);
   const [sys, setSys] = React.useState<ScoreSys>("points");
   const [err, setErr] = React.useState("");
+  const [step, setStep] = React.useState<1 | 2>(1);
+  const [customNames, setCustomNames] = React.useState<string[]>([]);
 
   const solo = kind !== "pair";
   const min = solo ? MIN_P : MIN_T;
   const max = solo ? MAX_P : MAX_T;
   const clamped = Math.max(min, Math.min(max, count));
 
+  const handleStartTournament = () => {
+    const code = buildCode();
+    if (!code) return;
+    const r = decodeCode(code);
+    if (!r.ok) {
+      setErr(tx("Bagan tidak bisa disusun dengan pilihan itu. Coba ubah jumlah peserta atau lapangan."));
+      return;
+    }
+    create({ name: name.trim() || tx("Turnamen"), date: date.trim(), code });
+    fromDecoded(r.data);
+    sync.off();
+    onOpen();
+  };
+
+  if (step === 2) {
+    return (
+      <Card
+        title={
+          <span className="flex items-center gap-2.5">
+            <span className="relative block size-9 shrink-0 rounded-[var(--radius-nb)] overflow-hidden border-2 border-[var(--nb-line)] bg-[var(--nb-card-2)] shadow-[1.5px_1.5px_0_var(--nb-line)]">
+              <img
+                src="/icons/apple-touch-icon.png"
+                alt="MN Padel Club Logo"
+                className="mn-logo-light size-full object-contain p-0.5"
+              />
+              <img
+                src="/icons/icon-192.png"
+                alt="MN Padel Club Logo"
+                className="mn-logo-dark size-full object-contain p-0.5"
+              />
+            </span>
+            <span className="min-w-0">
+              <span
+                className="nb-label block text-[10px] font-bold tracking-wider uppercase leading-tight"
+                style={{ color: "var(--nb-ink-soft)" }}
+              >
+                {tx("LANGKAH 2 DARI 2")}
+              </span>
+              <span className="nb-title block text-[17px] sm:text-[19px] leading-tight text-[var(--nb-ink)]">
+                {solo ? tx("Daftar Nama Pemain") : tx("Daftar Nama Tim")}
+              </span>
+            </span>
+          </span>
+        }
+        note={
+          solo
+            ? tx("Tentukan nama setiap pemain sebelum bagan diundi. Nama juga bisa diubah nanti.")
+            : tx("Tentukan nama setiap tim sebelum bagan diundi. Nama juga bisa diubah nanti.")
+        }
+        actions={
+          <Button size="sm" onClick={() => setStep(1)}>
+            {tx("← Aturan")}
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <Pill tone="plain">
+              {solo ? txf("{0} pemain", clamped) : txf("{0} tim", clamped)}
+            </Pill>
+            <Button
+              size="sm"
+              onClick={() => setCustomNames([])}
+              title={tx("Kosongkan / Nama Baku")}
+            >
+              {tx("Kosongkan / Nama Baku")}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 max-h-[360px] overflow-y-auto p-0.5">
+            {Array.from({ length: clamped }, (_, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="nb-pill size-7 flex items-center justify-center shrink-0 text-center font-bold text-[12px]">
+                  {i + 1}
+                </span>
+                <Input
+                  className="min-w-0 flex-1"
+                  placeholder={solo ? `Pemain ${i + 1}` : `Tim ${i + 1}`}
+                  value={customNames[i] ?? ""}
+                  maxLength={40}
+                  onChange={(e) => {
+                    const next = [...customNames];
+                    next[i] = e.target.value;
+                    setCustomNames(next);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {err && <Note tone="danger">{err}</Note>}
+
+          <div className="flex items-center justify-between gap-2 pt-2 border-t-[2px] border-[var(--nb-line)]">
+            <Button onClick={() => setStep(1)}>
+              {tx("← Kembali")}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleStartTournament}
+            >
+              {tx("Mulai Turnamen ➔")}
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card
-      title={t("hmNewTitle")}
+      title={
+        <span className="flex items-center gap-2.5">
+          <span className="relative block size-9 shrink-0 rounded-[var(--radius-nb)] overflow-hidden border-2 border-[var(--nb-line)] bg-[var(--nb-card-2)] shadow-[1.5px_1.5px_0_var(--nb-line)]">
+            <img
+              src="/icons/apple-touch-icon.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-light size-full object-contain p-0.5"
+            />
+            <img
+              src="/icons/icon-192.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-dark size-full object-contain p-0.5"
+            />
+          </span>
+          <span className="min-w-0">
+            <span
+              className="nb-label block text-[10px] font-bold tracking-wider uppercase leading-tight"
+              style={{ color: "var(--nb-ink-soft)" }}
+            >
+              {tx("LANGKAH 1 DARI 2")} · MN PADEL CLUB
+            </span>
+            <span className="nb-title block text-[17px] sm:text-[19px] leading-tight text-[var(--nb-ink)]">
+              {t("hmNewTitle")}
+            </span>
+          </span>
+        </span>
+      }
       note={t("hmNewSub")}
       actions={
         <Button size="sm" onClick={back}>
@@ -379,20 +575,30 @@ function NewPane({ onOpen, back }: { onOpen(): void; back(): void }) {
         <Button
           variant="primary"
           onClick={() => {
-            const code = buildCode();
-            if (!code) return;
-            const r = decodeCode(code);
-            if (!r.ok) {
-              setErr(tx("Bagan tidak bisa disusun dengan pilihan itu. Coba ubah jumlah peserta atau lapangan."));
+            const mexOn = kind === "mex";
+            if (mexOn && clamped < 8) {
+              setErr(txf("Mexicano butuh minimal {0} pemain.", 8));
               return;
             }
-            create({ name: name.trim() || tx("Turnamen"), date: date.trim(), code });
-            fromDecoded(r.data);
-            sync.off();
-            onOpen();
+            if (mexOn) {
+              const lap = Math.max(1, Math.min(courts, Math.floor(clamped / 4)));
+              if (clamped < 4 * lap) {
+                setErr(
+                  txf(
+                    "Pemain yang hadir kurang: butuh {0} orang untuk {1} lapangan, yang hadir baru {2}. Kurangi lapangan atau tandai ada yang hadir lagi.",
+                    4 * lap,
+                    lap,
+                    clamped,
+                  ),
+                );
+                return;
+              }
+            }
+            setErr("");
+            setStep(2);
           }}
         >
-          {t("hmCreateGo")}
+          {solo ? tx("Lanjut: Atur Pemain ➔") : tx("Lanjut: Atur Tim ➔")}
         </Button>
       </div>
     </Card>
@@ -407,9 +613,15 @@ function NewPane({ onOpen, back }: { onOpen(): void; back(): void }) {
     }
 
     const names: string[] = [];
-    for (let i = 1; i <= MAX_T; i++) names.push("Tim " + i);
+    for (let i = 1; i <= MAX_T; i++) {
+      const custom = customNames[i - 1]?.trim();
+      names.push(custom || "Tim " + i);
+    }
     const pnames: string[] = [];
-    for (let i = 1; i <= MAX_P; i++) pnames.push("Pemain " + i);
+    for (let i = 1; i <= MAX_P; i++) {
+      const custom = customNames[i - 1]?.trim();
+      pnames.push(custom || "Pemain " + i);
+    }
 
     const rounds = solo ? Math.max(3, Math.min(24, clamped % 4 === 0 ? clamped - 1 : 8)) : 0;
 
@@ -515,7 +727,33 @@ function JoinPane({
 
   return (
     <Card
-      title={t("hmJoinTitle")}
+      title={
+        <span className="flex items-center gap-2.5">
+          <span className="relative block size-9 shrink-0 rounded-[var(--radius-nb)] overflow-hidden border-2 border-[var(--nb-line)] bg-[var(--nb-card-2)] shadow-[1.5px_1.5px_0_var(--nb-line)]">
+            <img
+              src="/icons/apple-touch-icon.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-light size-full object-contain p-0.5"
+            />
+            <img
+              src="/icons/icon-192.png"
+              alt="MN Padel Club Logo"
+              className="mn-logo-dark size-full object-contain p-0.5"
+            />
+          </span>
+          <span className="min-w-0">
+            <span
+              className="nb-label block text-[10px] font-bold tracking-wider uppercase leading-tight"
+              style={{ color: "var(--nb-ink-soft)" }}
+            >
+              MN PADEL CLUB
+            </span>
+            <span className="nb-title block text-[17px] sm:text-[19px] leading-tight text-[var(--nb-ink)]">
+              {t("hmJoinTitle")}
+            </span>
+          </span>
+        </span>
+      }
       note={t("hmJoinSub")}
       actions={
         <Button size="sm" onClick={back}>

@@ -17,12 +17,119 @@
 
 import { MAX_P, MAX_T, MIN_P, MIN_T } from "@/shared/config";
 import { useT } from "@/shared/i18n";
-import { Button, Card, Input, Note, Pill } from "@/shared/ui";
+import { Button, Card, Input, Note, Overlay, Pill, Sheet } from "@/shared/ui";
 import { useTournament } from "@/entities/tournament/store";
 import { useMex, useSoloStats, atStakeOf } from "@/entities/tournament/derived";
 import { useSb } from "@/features/scoreboard/store";
 import { useSync } from "@/features/sync-room/store";
 import { askConfirm } from "@/features/confirm";
+
+export function RosterSheet({ open, onClose }: { open: boolean; onClose(): void }) {
+  const { t, tx, txf } = useT();
+  const s = useTournament();
+  const viewer = useSync((x) => x.role === "viewer");
+  const drafts = useSb((x) => Object.keys(x.drafts).length);
+  const solo = s.fmt === "solo";
+
+  const count = solo ? s.np : s.n;
+  const min = solo ? MIN_P : MIN_T;
+  const max = solo ? MAX_P : MAX_T;
+  const names = solo ? s.pnames : s.names;
+
+  const guard = (title: string, run: () => void) => {
+    const st = atStakeOf(s, drafts);
+    if (!st.any) {
+      run();
+      return;
+    }
+    askConfirm({
+      title,
+      body: tx(
+        "Bagan disusun ulang, jadi skor yang sudah masuk tidak lagi cocok dengan pertandingannya dan akan dikosongkan.",
+      ),
+      risk:
+        st.done +
+        tx(" laga berskor") +
+        (st.drafts ? " · " + st.drafts + tx(" hitungan belum dicatat") : ""),
+      okLabel: tx("Ya, lanjutkan"),
+      onOk: run,
+    });
+  };
+
+  return (
+    <Overlay open={open} onClose={onClose} label={solo ? t("navPemain") : t("navTim")} full>
+      <Sheet
+        title={solo ? t("navPemain") : t("navTim")}
+        kicker={solo ? t("tipRosterSolo") : t("tipRoster")}
+        onClose={onClose}
+        footer={
+          <div className="flex w-full items-center justify-between">
+            <span className="nb-label">
+              {solo ? txf("{0} pemain", count) : txf("{0} tim", count)}
+            </span>
+            <Button variant="primary" onClick={onClose}>
+              {tx("Tutup")}
+            </Button>
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Pill tone="plain">
+              {solo ? txf("{0} pemain", count) : txf("{0} tim", count)}
+            </Pill>
+            <Button
+              size="sm"
+              disabled={viewer || count >= max}
+              onClick={() =>
+                guard(
+                  solo ? tx("Tambah pemain?") : tx("Tambah tim?"),
+                  () => (solo ? s.setPlayerCount(count + 1) : s.setTeamCount(count + 1)),
+                )
+              }
+            >
+              {solo ? tx("+ Tambah pemain") : tx("+ Tambah tim")}
+            </Button>
+            <Button
+              size="sm"
+              disabled={viewer || count <= min}
+              onClick={() =>
+                guard(
+                  solo ? tx("Kurangi pemain?") : tx("Kurangi tim?"),
+                  () => (solo ? s.setPlayerCount(count - 1) : s.setTeamCount(count - 1)),
+                )
+              }
+            >
+              {solo ? tx("− Kurangi pemain") : tx("− Kurangi tim")}
+            </Button>
+          </div>
+
+          <ol className="m-0 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-2">
+            {Array.from({ length: count }, (_, i) => (
+              <RosterRow
+                key={i}
+                index={i}
+                name={names[i] ?? (solo ? "Pemain " + (i + 1) : "Tim " + (i + 1))}
+                solo={solo}
+                viewer={viewer}
+                canRemove={count > min}
+                onRemove={() =>
+                  guard(
+                    txf("Keluarkan {0}?", names[i] ?? ""),
+                    () => (solo ? s.removePlayer(i) : s.removeTeam(i)),
+                  )
+                }
+              />
+            ))}
+          </ol>
+
+          {solo && !s.mexOn && <SoloQuality />}
+          {solo && s.mexOn && <MexAttendance />}
+        </div>
+      </Sheet>
+    </Overlay>
+  );
+}
 
 export function RosterCard() {
   const { t, tx, txf } = useT();
@@ -61,7 +168,7 @@ export function RosterCard() {
   return (
     <Card
       title={solo ? t("navPemain") : t("navTim")}
-      note={solo ? t("tipRosterSolo") : t("tipRoster")}
+      tip={solo ? t("tipRosterSolo") : t("tipRoster")}
       actions={
         <>
           <Pill tone="plain">

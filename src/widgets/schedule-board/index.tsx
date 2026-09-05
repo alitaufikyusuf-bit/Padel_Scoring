@@ -159,7 +159,7 @@ function SlotGroup({
           }
         }}
       >
-        <span className="nb-title text-[15px]">
+        <span className="nb-title text-[15px]" style={{ color: "inherit" }}>
           {label} {index + 1}
         </span>
         <span className="nb-label" style={{ color: "inherit", opacity: 0.85 }}>
@@ -417,7 +417,7 @@ export function KnockoutBoard() {
   if (s.fmt !== "pair" || !ko.active) return null;
 
   return (
-    <Card title={t("cardKo")} note={ko.leagueDone ? undefined : t("tipKoWait")}>
+    <Card title={t("cardKo")} tip={ko.leagueDone ? undefined : t("tipKoWait")}>
       {!ko.leagueDone ? (
         <Empty>{tx("Menunggu babak liga selesai.")}</Empty>
       ) : (

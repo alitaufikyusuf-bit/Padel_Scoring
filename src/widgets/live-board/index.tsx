@@ -17,7 +17,7 @@
    ========================================================================== */
 
 import { useT } from "@/shared/i18n";
-import { Card, Empty, Pill, Table } from "@/shared/ui";
+import { Card, Empty, Pill, RankBadge, Table, cx } from "@/shared/ui";
 import { isDone } from "@/entities/match";
 import { useTournament } from "@/entities/tournament/store";
 import { useSoloTable, useTable } from "@/entities/tournament/derived";
@@ -52,7 +52,10 @@ export function LiveBoard() {
                   {txf("Lapangan {0}", Number(court) + 1)}
                 </div>
                 <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-2">
-                  <span className="nb-title truncate text-[clamp(0.95rem,2.6vw,1.35rem)]">
+                  <span
+                    className="nb-title truncate text-[clamp(0.95rem,2.6vw,1.35rem)]"
+                    style={{ color: "inherit" }}
+                  >
                     {e.na || "—"}
                   </span>
                   <span
@@ -61,7 +64,10 @@ export function LiveBoard() {
                   >
                     {e.a}
                   </span>
-                  <span className="nb-title truncate text-[clamp(0.95rem,2.6vw,1.35rem)]">
+                  <span
+                    className="nb-title truncate text-[clamp(0.95rem,2.6vw,1.35rem)]"
+                    style={{ color: "inherit" }}
+                  >
                     {e.nb || "—"}
                   </span>
                   <span
@@ -113,7 +119,7 @@ export function LiveBoard() {
         <Table>
           <thead>
             <tr>
-              <th style={{ width: "2.5rem" }}>#</th>
+              <th style={{ width: "3.25rem", minWidth: "3.25rem" }}>#</th>
               <th>{solo ? tx("Pemain") : tx("Tim")}</th>
               <th className="num">{tx("Main")}</th>
               <th className="num">{tx("W")}</th>
@@ -121,15 +127,20 @@ export function LiveBoard() {
             </tr>
           </thead>
           <tbody>
-            {(solo ? soloT : table).slice(0, 5).map((x, i) => (
-              <tr key={x.id} data-rank={i < 3 && x.p > 0 ? i + 1 : undefined}>
-                <td>{i + 1}</td>
-                <td className="font-semibold">{x.name}</td>
-                <td className="num">{x.p}</td>
-                <td className="num">{x.w}</td>
-                <td className="num">{solo ? x.tp : (x as { lp: number }).lp}</td>
-              </tr>
-            ))}
+            {(solo ? soloT : table).slice(0, 5).map((x, i) => {
+              const rank = i < 3 && x.p > 0 ? i + 1 : 0;
+              return (
+                <tr key={x.id} data-rank={rank || undefined}>
+                  <td>
+                    <RankBadge rank={rank || i + 1} />
+                  </td>
+                  <td className={cx("font-semibold", rank === 1 && "font-black tracking-wide")}>{x.name}</td>
+                  <td className="num">{x.p}</td>
+                  <td className="num">{x.w}</td>
+                  <td className="num">{solo ? x.tp : (x as { lp: number }).lp}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </Card>

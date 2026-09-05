@@ -426,3 +426,72 @@ export function Empty({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+/* ------------------------------------------------------------- RankBadge --- */
+
+export function RankBadge({ rank }: { rank: number }) {
+  if (rank === 1) {
+    return (
+      <span
+        className="inline-flex items-center justify-center gap-1 rounded-[var(--radius-nb)] border-2 border-[var(--nb-line)] px-2 py-0.5 text-[11px] font-black tracking-tight shadow-[2px_2px_0_var(--nb-line)]"
+        style={{
+          background: "#ffcf33",
+          color: "#101014",
+          fontFamily: "var(--font-cond)",
+        }}
+        title="Peringkat 1"
+      >
+        <svg className="size-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M5 18h14v2H5v-2zm14-11l-3.5 5.5L12 6l-3.5 6.5L5 7l1.5 9h11L19 7z" />
+        </svg>
+        <span>1ST</span>
+      </span>
+    );
+  }
+  if (rank === 2) {
+    return (
+      <span
+        className="inline-flex items-center justify-center gap-1 rounded-[var(--radius-nb)] border-2 border-[var(--nb-line)] px-1.5 py-0.5 text-[11px] font-black tracking-tight shadow-[2px_2px_0_var(--nb-line)]"
+        style={{
+          background: "#e2e8f0",
+          color: "#101014",
+          fontFamily: "var(--font-cond)",
+        }}
+        title="Peringkat 2"
+      >
+        <svg className="size-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="6" />
+          <path d="m9 13.5-3 8.5 6-3 6 3-3-8.5" />
+        </svg>
+        <span>2ND</span>
+      </span>
+    );
+  }
+  if (rank === 3) {
+    return (
+      <span
+        className="inline-flex items-center justify-center gap-1 rounded-[var(--radius-nb)] border-2 border-[var(--nb-line)] px-1.5 py-0.5 text-[11px] font-black tracking-tight shadow-[2px_2px_0_var(--nb-line)]"
+        style={{
+          background: "#f6ad55",
+          color: "#101014",
+          fontFamily: "var(--font-cond)",
+        }}
+        title="Peringkat 3"
+      >
+        <svg className="size-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="6" />
+          <path d="m9 13.5-3 8.5 6-3 6 3-3-8.5" />
+        </svg>
+        <span>3RD</span>
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-block min-w-[1.25rem] text-center font-bold text-[12px] opacity-75"
+      style={{ fontFamily: "var(--font-cond)" }}
+    >
+      {rank}
+    </span>
+  );
+}

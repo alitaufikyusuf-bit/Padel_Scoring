@@ -103,8 +103,8 @@
     --nb-card-2: #262332;
     --nb-line: #f6efdd;
     --nb-line-soft: #f6efdd;
-    --nb-accent: #b6ef1a;
-    --nb-accent-ink: #14131a;
+    --nb-accent: #8ecc1d;
+    --nb-accent-ink: #101014;
     --nb-hl: #6f97ff;
     --nb-hl-ink: #14131a;
     --nb-hl-soft: #2a3357;
@@ -132,8 +132,8 @@
   --nb-card-2: #262332;
   --nb-line: #f6efdd;
   --nb-line-soft: #f6efdd;
-  --nb-accent: #b6ef1a;
-  --nb-accent-ink: #14131a;
+  --nb-accent: #8ecc1d;
+  --nb-accent-ink: #101014;
   --nb-hl: #6f97ff;
   --nb-hl-ink: #14131a;
   --nb-hl-soft: #2a3357;
@@ -146,6 +146,12 @@
   --nb-good: #37d68f;
   --nb-good-ink: #14131a;
   color-scheme: dark;
+}
+
+/* Pastikan teks di dalam permukaan berlatar belakang aksen (hijau) selalu memakai warna tinta aksen (gelap) */
+[style*="--nb-accent"] .nb-title,
+[style*="--nb-accent"] .nb-label {
+  color: var(--nb-accent-ink);
 }
 
 /* ==========================================================================
@@ -518,16 +524,24 @@ body {
   font-weight: 700;
 }
 
-/* Tiga teratas klasemen ditandai warna DAN medali, jadi tidak bergantung rona
-   saja. */
+/* Tiga teratas klasemen ditandai warna, border aksen, dan lencana neo-brutalism */
 .nb-table tbody tr[data-rank="1"] td {
-  background: color-mix(in srgb, var(--color-gold) 34%, transparent);
+  background: color-mix(in srgb, #ffcf33 16%, var(--nb-card));
+}
+.nb-table tbody tr[data-rank="1"] td:first-child {
+  border-left: 3.5px solid #ffcf33;
 }
 .nb-table tbody tr[data-rank="2"] td {
-  background: color-mix(in srgb, var(--color-silver) 40%, transparent);
+  background: color-mix(in srgb, #cbd5e1 14%, var(--nb-card));
+}
+.nb-table tbody tr[data-rank="2"] td:first-child {
+  border-left: 3.5px solid #94a3b8;
 }
 .nb-table tbody tr[data-rank="3"] td {
-  background: color-mix(in srgb, var(--color-bronze) 28%, transparent);
+  background: color-mix(in srgb, #ed8936 14%, var(--nb-card));
+}
+.nb-table tbody tr[data-rank="3"] td:first-child {
+  border-left: 3.5px solid #ed8936;
 }
 
 /* --- keadaan slot --- */
