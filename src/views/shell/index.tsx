@@ -21,6 +21,7 @@ import { useTournament } from "@/entities/tournament/store";
 import { useKo, useRules } from "@/entities/tournament/derived";
 import { useTrList } from "@/entities/tournament/list-store";
 import { AppBar } from "@/widgets/app-bar";
+import { BottomNav } from "@/widgets/bottom-nav";
 import { TournamentList } from "@/widgets/tournament-list";
 import { Scoreboard } from "@/features/scoreboard/Scoreboard";
 import { useSb } from "@/features/scoreboard/store";
@@ -63,13 +64,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppBar onHome={close} />
-      <main className="mx-auto w-full max-w-5xl p-3 sm:p-4">{children}</main>
+      <main className="mx-auto w-full max-w-5xl p-3 sm:p-4 pb-28">{children}</main>
       <ScoreboardHost />
-      <footer className="noprint mx-auto w-full max-w-5xl px-3 pb-8 pt-2">
-        <p className="nb-label normal-case tracking-normal">
-          MN Padel Club · {tx("Aplikasi versi ")}5.0 · {tx("kode bagan v9")}
-        </p>
-      </footer>
+      <BottomNav />
     </>
   );
 }

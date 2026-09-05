@@ -449,7 +449,7 @@ function RoomCard() {
                   className="min-w-0 flex-1"
                   value={sync.dev}
                   maxLength={40}
-                  placeholder={tx("HP Andre")}
+                  placeholder={tx("HP Taufik")}
                   onChange={(e) => sync.setDev(e.target.value)}
                 />
               </div>
@@ -485,7 +485,7 @@ function RoomCard() {
                 className="min-w-0 flex-1"
                 value={sync.dev}
                 maxLength={40}
-                placeholder={tx("HP Andre")}
+                placeholder={tx("HP Taufik")}
                 onChange={(e) => sync.setDev(e.target.value)}
               />
             </Field>

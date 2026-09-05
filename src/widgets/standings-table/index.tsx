@@ -12,13 +12,11 @@
    ========================================================================== */
 
 import { useT } from "@/shared/i18n";
-import { Bar, Card, Empty, Pill, Table } from "@/shared/ui";
+import { Bar, Card, Empty, Pill, RankBadge, Table, cx } from "@/shared/ui";
 import { isDone } from "@/entities/match";
 import { useTournament } from "@/entities/tournament/store";
 import { useKo, useProgress, useSoloTable, useTable } from "@/entities/tournament/derived";
 import { WIN_PTS } from "@/shared/config";
-
-const MEDAL = ["🥇", "🥈", "🥉"];
 
 export function StandingsTable() {
   const fmt = useTournament((s) => s.fmt);
@@ -53,7 +51,7 @@ function PairStandings() {
       <Table>
         <thead>
           <tr>
-            <th style={{ width: "2.5rem" }}>#</th>
+            <th style={{ width: "3.25rem", minWidth: "3.25rem" }}>#</th>
             <th>{tx("Tim")}</th>
             <th className="num">{tx("M")}</th>
             <th className="num">{tx("W")}</th>
@@ -76,13 +74,11 @@ function PairStandings() {
                 <td>
                   {seeded ? (
                     <Pill tone="hl">S{i + 1}</Pill>
-                  ) : rank ? (
-                    <span aria-label={txf("Peringkat {0}", rank)}>{MEDAL[rank - 1]}</span>
                   ) : (
-                    i + 1
+                    <RankBadge rank={rank || i + 1} />
                   )}
                 </td>
-                <td className="font-semibold">{x.name}</td>
+                <td className={cx("font-semibold", rank === 1 && "font-black tracking-wide")}>{x.name}</td>
                 <td className="num">{x.p}</td>
                 <td className="num">{x.w}</td>
                 {draws > 0 && <td className="num">{x.d}</td>}
@@ -142,7 +138,7 @@ function SoloStandings() {
           <Table>
             <thead>
               <tr>
-                <th style={{ width: "2.5rem" }}>#</th>
+                <th style={{ width: "3.25rem", minWidth: "3.25rem" }}>#</th>
                 <th>{tx("Pemain")}</th>
                 <th className="num">{tx("Main")}</th>
                 <th className="num">{tx("W")}</th>
@@ -162,13 +158,9 @@ function SoloStandings() {
                 return (
                   <tr key={x.id} data-rank={rank || undefined} style={out ? { opacity: 0.55 } : undefined}>
                     <td>
-                      {rank ? (
-                        <span aria-label={txf("Peringkat {0}", rank)}>{MEDAL[rank - 1]}</span>
-                      ) : (
-                        i + 1
-                      )}
+                      <RankBadge rank={rank || i + 1} />
                     </td>
-                    <td className="font-semibold">
+                    <td className={cx("font-semibold", rank === 1 && "font-black tracking-wide")}>
                       {x.name}
                       {out && (
                         <>
@@ -237,7 +229,7 @@ export function Podium() {
               data-rank={i + 1}
               style={{ background: podiumBg(i) }}
             >
-              <span className="text-[22px]">{MEDAL[i]}</span>
+              <RankBadge rank={i + 1} />
               <span className="nb-title flex-1 truncate">{x.name}</span>
               <Pill tone="ink">
                 {x.tp} {tx("poin")}
@@ -258,9 +250,10 @@ export function Podium() {
             <li
               key={x.id}
               className="nb-border flex items-center gap-3 rounded-[var(--radius-nb)] p-2.5"
+              data-rank={i + 1}
               style={{ background: podiumBg(i) }}
             >
-              <span className="text-[22px]">{MEDAL[i]}</span>
+              <RankBadge rank={i + 1} />
               <span className="nb-title flex-1 truncate">{x.name}</span>
               <Pill tone="ink">
                 {x.lp} {tx("poin liga")}
@@ -282,7 +275,7 @@ export function Podium() {
           className="nb-border flex items-center gap-3 rounded-[var(--radius-nb)] p-2.5"
           style={{ background: podiumBg(0) }}
         >
-          <span className="text-[22px]">{MEDAL[0]}</span>
+          <RankBadge rank={1} />
           <span className="nb-title flex-1 truncate">{nm(p.first)}</span>
           <Pill tone="ink">{tx("Juara")}</Pill>
         </li>
@@ -291,7 +284,7 @@ export function Podium() {
             className="nb-border flex items-center gap-3 rounded-[var(--radius-nb)] p-2.5"
             style={{ background: podiumBg(1) }}
           >
-            <span className="text-[22px]">{MEDAL[1]}</span>
+            <RankBadge rank={2} />
             <span className="nb-title flex-1 truncate">{nm(p.second)}</span>
           </li>
         )}
@@ -300,7 +293,7 @@ export function Podium() {
             className="nb-border flex items-center gap-3 rounded-[var(--radius-nb)] p-2.5"
             style={{ background: podiumBg(2) }}
           >
-            <span className="text-[22px]">{MEDAL[2]}</span>
+            <RankBadge rank={3} />
             <span className="nb-title flex-1 truncate">{nm(p.third)}</span>
           </li>
         )}
@@ -309,7 +302,7 @@ export function Podium() {
             className="nb-border flex flex-wrap items-center gap-2 rounded-[var(--radius-nb)] p-2.5"
             style={{ background: podiumBg(2) }}
           >
-            <span className="text-[22px]">{MEDAL[2]}</span>
+            <RankBadge rank={3} />
             <span className="nb-label">{tx("Peringkat 3 bersama")}</span>
             <span className="nb-title flex-1">
               {[p.thirdAlt[0], p.thirdAlt[1]].filter(Boolean).map(nm).join(" · ")}
@@ -322,7 +315,7 @@ export function Podium() {
 }
 
 function podiumBg(i: number): string {
-  if (i === 0) return "color-mix(in srgb, var(--color-gold) 34%, transparent)";
-  if (i === 1) return "color-mix(in srgb, var(--color-silver) 40%, transparent)";
-  return "color-mix(in srgb, var(--color-bronze) 28%, transparent)";
+  if (i === 0) return "color-mix(in srgb, #ffcf33 22%, var(--nb-card))";
+  if (i === 1) return "color-mix(in srgb, #cbd5e1 18%, var(--nb-card))";
+  return "color-mix(in srgb, #ed8936 18%, var(--nb-card))";
 }

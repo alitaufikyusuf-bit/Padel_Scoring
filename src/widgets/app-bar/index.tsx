@@ -32,12 +32,7 @@ import { useSync } from "@/features/sync-room/store";
 import { useCode } from "@/features/sync-room/useSession";
 import { syErrText } from "@/features/sync-room/api";
 
-const TABS: { href: string; key: UiKey }[] = [
-  { href: "/bagan", key: "navBagan" },
-  { href: "/klasemen", key: "navKlasemen" },
-  { href: "/atur", key: "navAtur" },
-  { href: "/live", key: "navLive" },
-];
+
 
 export function AppBar({ onHome }: { onHome(): void }) {
   const { t, tx, txf } = useT();
@@ -156,33 +151,7 @@ export function AppBar({ onHome }: { onHome(): void }) {
         </div>
       </div>
 
-      <nav className="mx-auto flex w-full max-w-5xl gap-0 overflow-x-auto px-3 pb-2">
-        <span className="nb-seg">
-          {TABS.map((tab) => (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              data-on={pathname === tab.href}
-              className="nb-seg-link"
-              style={{
-                appearance: "none",
-                borderLeft: "3px solid var(--nb-line)",
-                padding: "0.4375rem 0.75rem",
-                fontFamily: "var(--font-cond)",
-                fontWeight: 700,
-                fontSize: "0.75rem",
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                whiteSpace: "nowrap",
-                background: pathname === tab.href ? "var(--nb-ink)" : "transparent",
-                color: pathname === tab.href ? "var(--nb-bg)" : "var(--nb-ink)",
-              }}
-            >
-              {t(tab.key)}
-            </Link>
-          ))}
-        </span>
-      </nav>
+
 
       {flash && (
         <p

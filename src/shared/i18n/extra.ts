@@ -197,8 +197,12 @@ export const EN_EXTRA: Record<string, string> = {
     "default {0}",
   "Turnamen ini belum dibagikan. Tekan tombol di kartu Bagikan untuk membuat ruangnya.":
     "This tournament has not been shared yet. Press the button in the Share card to create its room.",
+  "HP Taufik":
+    "Taufik phone",
   "HP Andre":
-    "Andre phone",
+    "Taufik phone",
+  "Turnamen ini belum dibagikan ke ruang. Buat kode ruang agar perangkat lain bisa ikut mencatat atau menonton live:":
+    "This tournament has not been shared to a room yet. Create a room code so other devices can join to score or watch live:",
   "Menyegarkan…":
     "Refreshing…",
   "Sudah paling baru (versi {0}).":
@@ -243,6 +247,28 @@ export const EN_EXTRA: Record<string, string> = {
     "A draw cannot be built with those choices. Try changing the number of entrants or courts.",
   "Turnamen":
     "Tournament",
+  "LANGKAH 1 DARI 2":
+    "STEP 1 OF 2",
+  "LANGKAH 2 DARI 2":
+    "STEP 2 OF 2",
+  "Daftar Nama Pemain":
+    "Player Names",
+  "Daftar Nama Tim":
+    "Team Names",
+  "Lanjut: Atur Pemain ➔":
+    "Next: Setup Players ➔",
+  "Lanjut: Atur Tim ➔":
+    "Next: Setup Teams ➔",
+  "Tentukan nama setiap pemain sebelum bagan diundi. Nama juga bisa diubah nanti.":
+    "Enter names for each player before the draw is generated. Names can also be changed later.",
+  "Tentukan nama setiap tim sebelum bagan diundi. Nama juga bisa diubah nanti.":
+    "Enter names for each team before the draw is generated. Names can also be changed later.",
+  "Mulai Turnamen ➔":
+    "Start Tournament ➔",
+  "Kosongkan / Nama Baku":
+    "Reset to Default",
+  "← Aturan":
+    "← Rules",
   "ruang berkunci":
     "room is locked",
   "ruang terbuka":

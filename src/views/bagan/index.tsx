@@ -17,7 +17,7 @@ import { Button, Card, Note, Pill } from "@/shared/ui";
 import { useTournament } from "@/entities/tournament/store";
 import { atStakeOf, useMex } from "@/entities/tournament/derived";
 import { KnockoutBoard, ScheduleBoard } from "@/widgets/schedule-board";
-import { RosterCard } from "@/widgets/roster-card";
+import { RosterSheet } from "@/widgets/roster-card";
 import { useSb } from "@/features/scoreboard/store";
 import { useSync } from "@/features/sync-room/store";
 import { askConfirm } from "@/features/confirm";
@@ -25,20 +25,22 @@ import { SwapHost } from "@/features/swap-player/SwapSheet";
 import { AppShell } from "@/views/shell";
 
 export function BaganView() {
+  const [rosterOpen, setRosterOpen] = React.useState(false);
+
   return (
     <AppShell>
       <div className="flex flex-col gap-3">
-        <SchedControls />
+        <SchedControls onOpenRoster={() => setRosterOpen(true)} />
         <ScheduleBoard />
         <KnockoutBoard />
-        <RosterCard />
       </div>
+      <RosterSheet open={rosterOpen} onClose={() => setRosterOpen(false)} />
       <SwapHost />
     </AppShell>
   );
 }
 
-function SchedControls() {
+function SchedControls({ onOpenRoster }: { onOpenRoster(): void }) {
   const { t, tx, txf } = useT();
   const s = useTournament();
   const mex = useMex();
@@ -77,9 +79,18 @@ function SchedControls() {
   return (
     <Card
       title={t("cardSched")}
-      note={s.mexOn ? t("tipSchedMex") : s.fmt === "solo" ? t("tipSchedSolo") : t("tipSched")}
+      tip={s.mexOn ? t("tipSchedMex") : s.fmt === "solo" ? t("tipSchedSolo") : t("tipSched")}
       actions={
         <>
+          <Button
+            size="sm"
+            variant="hl"
+            onClick={onOpenRoster}
+            title={s.fmt === "solo" ? t("navPemain") : t("navTim")}
+          >
+            {s.fmt === "solo" ? `👥 ${txf("{0} pemain", s.np)}` : `👥 ${txf("{0} tim", s.n)}`}
+          </Button>
+
           {s.mexOn ? (
             <>
               <Pill tone="plain">{txf("{0}/{1} ronde", s.rnd.length, s.rounds)}</Pill>
