@@ -1,0 +1,25 @@
+{
+  "name": "MN Padel Club — Turnamen Padel",
+  "short_name": "MN Padel",
+  "description": "Bagan, jadwal, klasemen, dan papan skor turnamen padel. Jalan penuh tanpa internet.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "/bagan",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdf6e8",
+  "theme_color": "#c8ff2e",
+  "categories": ["sports", "utilities"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Bagan", "url": "/bagan" },
+    { "name": "Klasemen", "url": "/klasemen" },
+    { "name": "Live", "url": "/live" }
+  ]
+}

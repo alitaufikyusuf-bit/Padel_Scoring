@@ -1,0 +1,30 @@
+{
+  "name": "padel-pwa",
+  "version": "5.0.0",
+  "private": true,
+  "description": "MN Padel Club — bagan, jadwal, klasemen, dan papan skor turnamen padel",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import ./scripts/register-alias.mjs scripts/uji-logika.ts && node --import ./scripts/register-alias.mjs scripts/uji-mexicano.ts",
+    "test:logika": "node --import ./scripts/register-alias.mjs scripts/uji-logika.ts",
+    "test:mexicano": "node --import ./scripts/register-alias.mjs scripts/uji-mexicano.ts"
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zustand": "5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.13",
+    "@types/node": "24.5.2",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "tailwindcss": "4.1.13",
+    "typescript": "5.9.2"
+  }
+}
