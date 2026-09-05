@@ -159,3 +159,25 @@ export function shortId(prefix = "t"): string {
     Math.floor(Math.random() * 1e4).toString(36)
   );
 }
+
+let bodyLocks = 0;
+let prevBodyOverflow = "";
+
+export function lockBodyScroll(): void {
+  if (typeof document === "undefined") return;
+  if (bodyLocks === 0) {
+    prevBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  bodyLocks++;
+}
+
+export function unlockBodyScroll(): void {
+  if (typeof document === "undefined") return;
+  if (bodyLocks > 0) {
+    bodyLocks--;
+    if (bodyLocks === 0) {
+      document.body.style.overflow = prevBodyOverflow;
+    }
+  }
+}

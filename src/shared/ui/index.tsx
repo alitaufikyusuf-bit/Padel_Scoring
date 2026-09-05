@@ -9,6 +9,7 @@
    ========================================================================== */
 
 import * as React from "react";
+import { lockBodyScroll, unlockBodyScroll } from "@/shared/lib";
 
 function cx(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(" ");
@@ -294,11 +295,10 @@ export function Overlay({ open, onClose, children, label, full }: OverlayProps) 
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlockBodyScroll();
     };
   }, [open, onClose]);
 
