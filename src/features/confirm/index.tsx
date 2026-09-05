@@ -22,6 +22,7 @@ import * as React from "react";
 import { create } from "zustand";
 
 import { useT } from "@/shared/i18n";
+import { lockBodyScroll, unlockBodyScroll } from "@/shared/lib";
 import { Button, Note } from "@/shared/ui";
 
 export interface ConfirmReq {
@@ -92,11 +93,10 @@ export function ConfirmHost() {
       if (e.key === "Escape") close(true);
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      unlockBodyScroll();
     };
   }, [req, close]);
 
