@@ -525,19 +525,21 @@ function JoinPane({
     >
       <div className="flex flex-col gap-3">
         <Field label={t("hmCode")} htmlFor="jnRoom">
-          <Input
-            id="jnRoom"
-            className="min-w-0 flex-1"
-            placeholder="KAMISAN-TH-957"
-            value={room}
-            onChange={(e) => {
-              setRoom(e.target.value.toUpperCase());
-              setFound(null);
-            }}
-          />
-          <Button size="sm" disabled={busy || !room.trim()} onClick={() => void lookup(room)}>
-            {t("hmLookup")}
-          </Button>
+          <div className="flex w-full gap-2">
+            <Input
+              id="jnRoom"
+              className="min-w-0 flex-1"
+              placeholder="KAMISAN-TH-957"
+              value={room}
+              onChange={(e) => {
+                setRoom(e.target.value.toUpperCase());
+                setFound(null);
+              }}
+            />
+            <Button size="sm" disabled={busy || !room.trim()} onClick={() => void lookup(room)}>
+              {t("hmLookup")}
+            </Button>
+          </div>
         </Field>
 
         {err && <Note tone="danger">{err}</Note>}
